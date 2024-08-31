@@ -10,10 +10,18 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    // Obtain input arguments and convert
+    // Obtain input arguments
     std::ifstream csv(argv[1]);
     std::string thresh_arg(argv[2]);
-    long unsigned int thresh = std::stoi(thresh_arg);
+    long unsigned int thresh = 0;
+    
+    // Confirm valid threshold argument
+    try {
+        thresh = std::stoi(thresh_arg);
+    } catch(...) {
+        std::cout << "Invalid threshold argument!" << std::endl;
+        return 0;
+    }
 
     // Temporary values from CSV
     std::string thisname;
@@ -21,15 +29,18 @@ int main(int argc, char **argv)
 
     int sum = 0;
 
-    std::cout << "==========" << std::endl;
-    while(std::getline(csv, thisname, ',')) {
-        std::getline(csv, thisnum); // guaranteed to have number following name
-        if (thisname.size() == thresh)
-            std::cout << thisname << std::endl;
-        if (thisname.size() >= thresh)
-            sum += std::stoi(thisnum);
-    }
-    std::cout << sum << std::endl << "==========" << std::endl;
+    if (csv.is_open()) {
+        std::cout << "==========" << std::endl;
+        while(std::getline(csv, thisname, ',')) {
+            std::getline(csv, thisnum); // guaranteed to have number following name
+            if (thisname.size() == thresh)
+                std::cout << thisname << std::endl;
+            if (thisname.size() >= thresh)
+                sum += std::stoi(thisnum);
+        }
+        std::cout << sum << std::endl << "==========" << std::endl;
+        csv.close();
+    } else std::cout << "Unable to open supplied file!" << std::endl;
 
     return 0;
 }
